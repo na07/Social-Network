@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход</title>
-    <style>
+{% extends "base/base.html" %}
+
+{% block title %} регистрация
+{% endblock %}
+
+{% block style %}
+
+
       body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
@@ -38,9 +40,12 @@
         color: red;
         margin-top: 10px;
       }
-    </style>
-</head>
+
+{% endblock %}
+
+
 <body>
+ {% block content %}
   <div class="form-container">
     <h2>Вход</h2>
     <form method="POST">
@@ -56,5 +61,11 @@
       </div>
     {% endif %}
   </div>
+{% endblock %}
 </body>
 </html>
+
+
+
+
+

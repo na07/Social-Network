@@ -16,7 +16,7 @@ def register_view(request):
             return redirect('/home_page/')  # замените на вашу страницу входа
     else:
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'auth/register.html', {'form': form})
 
 
 def login_view(request):
@@ -36,4 +36,4 @@ def login_view(request):
                 messages.error(request, 'Неверное имя пользователя или пароль.')
     else:
         form = LoginForm()
-    return render(request, 'log.html', {'form': form})
+    return render(request, 'auth/log.html', {'form': form})

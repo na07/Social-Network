@@ -9,9 +9,9 @@ class Profile(models.Model):
         ("IDLE", "Idle"),
     )
     owner = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    avatar = models.ImageField()
-    age = models.PositiveIntegerField()
-    bio = models.CharField(max_length=150)
+    avatar = models.ImageField(blank=True, null=True)
+    age = models.PositiveIntegerField(blank=True, null=True)
+    bio = models.CharField(max_length=150, blank=True, null=True)
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default="OFFLINE")
     def __str__ (self):
         return f"Профиль {self.owner.username}"
