@@ -5,6 +5,7 @@ from .models import Profile
 
 User = get_user_model()
 
-@receiver(signal=post_save, sender=User)
-def create_profile(sender, instance, **kwargs):
-    Profile.objects.get_or_create(owner=instance)
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(owner=instance)

@@ -3,8 +3,14 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 class RegisterForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
-    confirm_password = forms.CharField(widget=forms.PasswordInput, label="Подтверждение пароля")
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Пароль"
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Подтверждение пароля"
+    )
 
     class Meta:
         model = User
@@ -14,7 +20,7 @@ class RegisterForm(forms.ModelForm):
             'email': 'Email',
         }
         help_texts = {
-            'username': '',  # убирает эту строчку
+            'username': '',  # убирает стандартное help_text
         }
 
     def clean(self):
@@ -25,7 +31,19 @@ class RegisterForm(forms.ModelForm):
         if password != confirm_password:
             raise ValidationError("Пароли не совпадают.")
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])  # хеширует пароль
+        if commit:
+            user.save()
+        return user
+
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label="Имя пользователя")
-    password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
+    username = forms.CharField(
+        label="Имя пользователя"
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label="Пароль"
+    )
