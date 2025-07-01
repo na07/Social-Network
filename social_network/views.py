@@ -13,4 +13,4 @@ def home_view(request):
 @login_required
 def profile_view(request:HttpRequest) -> HttpResponse:
     authents = Profile.objects.filter(owner=request.user)
-    return render(request, "sn/profile_page.html", {"authents": authents})
+    return render(request, "sn/profile_page.html", {"profile": authents.first()})

@@ -13,7 +13,7 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Регистрация прошла успешно!')
-            return redirect('/home_page/')
+            return redirect('sn:home')
     else:
         form = RegisterForm()
     return render(request, 'auth/register.html', {'form': form})
@@ -32,7 +32,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Вы вошли в систему!')
-                return redirect('/home_page/')
+                return redirect('sn:home')
             else:
                 messages.error(request, 'Неверное имя пользователя или пароль.')
     else:
@@ -44,5 +44,5 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "Вы вышли из системы.")
-    return redirect('/home_page/')
+    return redirect('sn:home')
 
