@@ -12,7 +12,6 @@ class Subscribe(models.Model):
     class Meta:
         unique_together = ("follower", "user")
 
-
 class Friendship(models.Model):
     friend = models.ForeignKey(User, related_name="my_friends", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="friends", on_delete=models.CASCADE)

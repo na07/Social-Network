@@ -33,9 +33,32 @@ background-color: #9de2ff;
                 </div>
               </div>
               <div class="d-flex pt-1">
-                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary me-1 flex-grow-1">Chat</button>
-                <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1">Follow</button>
+                <form action="{% url 'sn:friendship' profile.owner.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">Add Friend</button>
+                </form>
+                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary me-1 flex-grow-1">change</button>
+                <form action="{% url 'sn:subscribe' profile.owner.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                      Follow
+                  </button>
+                </form>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="px-4 py-500">
+  <div class="row d-flex justify-content-center">
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      <div class="card" style="border-radius: 5px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
             </div>
           </div>
         </div>
