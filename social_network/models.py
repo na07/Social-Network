@@ -20,3 +20,8 @@ class Friendship(models.Model):
 
     class Meta:
         unique_together = ("user", "friend")
+
+class Postiki(models.Model):
+    avtor = models.CharField(max_length=50)
+    textik = models.CharField(max_length=500)
+    created_date = models.DateTimeField(auto_now_add=True)

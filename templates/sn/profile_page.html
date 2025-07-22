@@ -37,12 +37,13 @@ background-color: #9de2ff;
                   {% csrf_token %}
                   <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">Add Friend</button>
                 </form>
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary me-1 flex-grow-1">change</button>
+                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">change</button>
                 <form action="{% url 'sn:subscribe' profile.owner.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary flex-grow-1">
                       Follow
                   </button>
+                <a href="{% url 'sn:friends_requests' %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">list</a>
                 </form>
               </div>
             </div>
@@ -53,6 +54,33 @@ background-color: #9de2ff;
   </div>
 </div>
 <div class="px-4 py-500">
+  <div class="row d-flex justify-content-center">
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      <div class="card" style="border-radius: 5px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <h2>Друзья</h2>
+              <ul>
+                {% for friendship in friends %}
+                  {% if friendship.confirmed %}
+                    <li>
+                      {{ friendship.friend.username }}
+                      <a href="{% url 'sn:delete_friend' friendship.id %}">Удалить из друзей</a>
+                    </li>
+                  {% endif %}
+                {% empty %}
+                  <li>У вас пока нет друзей.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="px-4 py-500 mt-5">
   <div class="row d-flex justify-content-center">
     <div class="col col-md-9 col-lg-7 col-xl-6">
       <div class="card" style="border-radius: 5px;">
