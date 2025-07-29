@@ -3,7 +3,9 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
-from .models import Subscribe, Friendship
+
+from .admin import PostAdmin
+from .models import Subscribe, Friendship, Post
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 
@@ -23,7 +25,8 @@ def home_view(request):
 def profile_view(request: HttpRequest, user_id: int) -> HttpResponse:
     user = get_object_or_404(User, id=user_id)
     friends = Friendship.objects.filter(Q(user=user) | Q(friend=user), confirmed=True)
-    return render(request, "sn/profile_page.html", {"profile": user.profile, "friends": friends})
+    posts = Post.objects.filter(author=user, status='published')
+    return render(request, "sn/profile_page.html", {"profile": user.profile, "friends": friends, "posts": posts})
 
 @login_required
 def subscribe(request, user_id):

@@ -53,6 +53,7 @@ background-color: #9de2ff;
     </div>
   </div>
 </div>
+{% if request.user == profile.owner %}
 <div class="px-4 py-500">
   <div class="row d-flex justify-content-center">
     <div class="col col-md-9 col-lg-7 col-xl-6">
@@ -80,6 +81,7 @@ background-color: #9de2ff;
     </div>
   </div>
 </div>
+{% endif %}
 <div class="px-4 py-500 mt-5">
   <div class="row d-flex justify-content-center">
     <div class="col col-md-9 col-lg-7 col-xl-6">
@@ -87,6 +89,12 @@ background-color: #9de2ff;
         <div class="card-body p-4">
           <div class="d-flex">
             <div class="flex-shrink-0">
+              {% for post in posts %}
+              {{ post.title }}
+              {{ post.author }}
+              {{ post.text }}
+              {{ post.status }}
+              {% endfor %}
             </div>
           </div>
         </div>
