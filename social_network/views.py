@@ -21,6 +21,7 @@ def friends_request_view(request):
 def home_view(request):
     return render(request, "sn/home_page.html")
 
+
 @login_required
 def profile_view(request: HttpRequest, user_id: int) -> HttpResponse:
     user = get_object_or_404(User, id=user_id)
@@ -77,6 +78,8 @@ def delete_friend(request, friend_id):
 
     return redirect('sn:profile', user_id=request.user.id)
 
+def create_post(request):
+    return render(request, "sn/create_post.html")
 
 
 

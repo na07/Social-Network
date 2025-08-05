@@ -85,16 +85,77 @@ background-color: #9de2ff;
 <div class="px-4 py-500 mt-5">
   <div class="row d-flex justify-content-center">
     <div class="col col-md-9 col-lg-7 col-xl-6">
-      <div class="card" style="border-radius: 5px;">
+      <div class="card" style="border-radius: 20px;">
         <div class="card-body p-4">
           <div class="d-flex">
             <div class="flex-shrink-0">
-              {% for post in posts %}
-              {{ post.title }}
-              {{ post.author }}
-              {{ post.text }}
-              {{ post.status }}
-              {% endfor %}
+              <div class="container py-4">
+                <style>
+                  .post-card {
+                    border: 1px solid #dee2e6;
+                    border-radius: 12px;
+                    padding: 16px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    background-color: #fff;
+                    max-width: 500px;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+                  }
+
+                  .post-content {
+                    flex-grow: 1;
+                  }
+
+                  .post-title {
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    margin-bottom: 4px;
+                  }
+
+                  .post-text {
+                    color: #343a40;
+                    font-size: 0.95rem;
+                  }
+
+                  .post-meta {
+                    text-align: right;
+                    margin-left: 16px;
+                    white-space: nowrap;
+                  }
+
+                  .post-author {
+                    font-size: 0.85rem;
+                    color: #6c757d;
+                  }
+
+                  .status-badge {
+                    font-size: 0.75rem;
+                    padding: 0.3em 0.75em;
+                    border-radius: 999px;
+                    margin-top: 12px;
+                    display: inline-block;
+                  }
+                </style>
+                {% for post in posts %}
+                  <div class="post-card mb-3">
+                    <div class="post-content">
+                      <div class="post-title">{{ post.title }}</div>
+                      <div class="post-text">{{ post.text }}</div>
+                    </div>
+                    <div class="post-meta">
+                      <div class="post-author">{{ post.author }}</div>
+                      {% if post.status == "published" %}
+                        <span class="badge bg-success status-badge">Опубликовано</span>
+                      {% elif post.status == "draft" %}
+                        <span class="badge bg-warning text-dark status-badge">Черновик</span>
+                      {% else %}
+                        <span class="badge bg-secondary status-badge">Неизвестно</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
             </div>
           </div>
         </div>
