@@ -3,11 +3,12 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
-
+from .forms import CreatePost
 from .admin import PostAdmin
 from .models import Subscribe, Friendship, Post
 from django.contrib.auth.models import User
 from authenticator.models import Profile
+from django.contrib import messages
 
 
 # Create your views here.
@@ -78,9 +79,29 @@ def delete_friend(request, friend_id):
 
     return redirect('sn:profile', user_id=request.user.id)
 
+
+@login_required
 def create_post(request):
-    return render(request, "sn/create_post.html")
+    form = CreatePost()
+    if request.method == "POST":
+        form = CreatePost(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            messages.success(request, "Пост успешно создан")
+            return redirect("sn:home")
+
+    return render(request, "sn/create_post.html", {"form": form})
 
 
+def posts(request):
+    posts = Post.objects.filter(status='published')
+    return render(request, "sn/posts_page.html", {"posts": posts})
+
+
+def post_info(request: HttpRequest, post_id: int) -> HttpResponse:
+    post = get_object_or_404(Post, id=post_id)
+    return render(request, "sn/post_info.html", {"post": post})
 
 

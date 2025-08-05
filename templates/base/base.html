@@ -15,11 +15,17 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto"> <!-- me-auto сдвигает все вправо после этого блока -->
+      <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'sn:home' %}">Home</a>
         </li>
       </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'sn:create_post' %}">create post</a>
+        </li>
+      </ul>
+
         {% if request.user.is_authenticated %}
       <ul class="navbar-nav">
         <li class="nav-item">
