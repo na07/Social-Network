@@ -2,11 +2,19 @@
 
 {% block style %}body {
 background-color: #9de2ff;
+{% load crispy_forms_filters %}
 }{% endblock %}
 
 {% block content %}
 
-
+<form method="get">
+    <div class="row justify-content-center">
+        <div class="col-3">
+            {{form|crispy}}
+            <button class="btn btn-primary flex-grow-1 me-1" type="submit">submit</button>
+        </div>
+    </div>
+</form>
 
 
 <div class="row justify-content-center mt-5 g-4">

@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
-from .forms import CreatePost
+from .forms import CreatePost, Filter
 from .admin import PostAdmin
 from .models import Subscribe, Friendship, Post
 from django.contrib.auth.models import User
@@ -94,10 +94,24 @@ def create_post(request):
 
     return render(request, "sn/create_post.html", {"form": form})
 
-
 def posts(request):
     posts = Post.objects.filter(status='published')
-    return render(request, "sn/posts_page.html", {"posts": posts})
+    form = Filter(request.GET)
+    author = request.GET.get("author")
+    created = request.GET.get("created")
+    print(created)
+    date1 = request.GET.get("date1")
+    date2 = request.GET.get("date2")
+    if author:
+        posts = posts.filter(author__username=author)
+    if created:
+        posts = posts.filter(created__date=created)
+    if date1:
+        posts = posts.filter(created__date__lt=date2)
+    if date2:
+        posts = posts.filter(created__date__gt=date1)
+
+    return render(request, "sn/posts_page.html", {"posts": posts, "form": form})
 
 
 def post_info(request: HttpRequest, post_id: int) -> HttpResponse:

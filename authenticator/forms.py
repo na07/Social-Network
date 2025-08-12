@@ -47,3 +47,4 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput,
         label="Пароль"
     )
+
