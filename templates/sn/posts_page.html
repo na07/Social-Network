@@ -9,15 +9,14 @@ background-color: #9de2ff;
 
 
 
-<div class="row justify-content-center mt-5">
+<div class="row justify-content-center mt-5 g-4">
   {% for post in posts %}
-     <div class="col-4">
-        <div class="card">
+     <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0">
           <div class="card-body">
-            <h3 class="card-title">{{ post.author }}</h3>
-            <h5 class="card-title">{{ post.title }}</h5>
+            <h3 class="card-title fw-bold">{{ post.author }}</h3>
+            <h5 class="card-subtitle mb-2 text-muted">{{ post.title }}</h5>
             <p class="card-text">{{ post.text }}</p>
-            <a href="#" class="btn btn-primary">check all</a>
           </div>
        </div>
      </div>
