@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load snfilters %}
 
 {% block style %}body {
 background-color: #9de2ff;
@@ -35,14 +36,20 @@ background-color: #9de2ff;
               <div class="d-flex pt-1">
                 <form action="{% url 'sn:friendship' profile.owner.id %}" method="post">
                   {% csrf_token %}
+                  {% if profile.owner|friends_check:request.user %}
+                  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary flex-grow-1 me-1">Remove friend</button>
+                  {% else %}
                   <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">Add Friend</button>
+                  {% endif %}
                 </form>
                 <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">change</button>
                 <form action="{% url 'sn:subscribe' profile.owner.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-primary flex-grow-1">
-                      Follow
-                  </button>
+                    {% if profile.owner|follow_check:request.user %}
+                    <button type="submit" class="btn btn-outline-primary flex-grow-1">Remove follow</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary flex-grow-1">Follow</button>
+                    {% endif %}
                 <a href="{% url 'sn:friends_requests' %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">list</a>
                 </form>
               </div>
@@ -82,37 +89,27 @@ background-color: #9de2ff;
   </div>
 </div>
 {% endif %}
-<div class="px-4 mt-5">
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-      {% for post in posts %}
-        <div class="card shadow-sm border-0 rounded-4 mb-3 position-relative">
-          <div class="card-body d-flex justify-content-between align-items-start">
 
-            <div class="me-3">
-              <h5 class="card-title fw-bold mb-1">{{ post.title }}</h5>
-              <p class="card-text text-muted mb-0">
-                {{ post.text|slice:":15" }}{% if post.text|length > 15 %}...{% endif %}
-              </p>
-            </div>
 
-            <div class="text-end">
-              <small class="text-secondary d-block">{{ post.author }}</small>
-              {% if post.status == "published" %}
-                <span class="badge bg-success">Опубликовано</span>
-              {% elif post.status == "draft" %}
-                <span class="badge bg-warning text-dark">Черновик</span>
-              {% else %}
-                <span class="badge bg-secondary">Неизвестно</span>
-              {% endif %}
-            </div>
-
-            <a href="{% url 'sn:post_info' post.id %}" class="stretched-link"></a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
+<div class="card" style="width: 18rem;">
+  {% for post in posts %}
+  <img src="..." class="card-img-top" alt="...">
+  <div>
+    <small class="text-secondary d-block">{{ post.author }}</small>
+    {% if post.status == "published" %}
+      <span class="badge bg-success">Опубликовано</span>
+    {% elif post.status == "draft" %}
+      <span class="badge bg-warning text-dark">Черновик</span>
+    {% else %}
+      <span class="badge bg-secondary">Неизвестно</span>
+    {% endif %}
   </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ post.title }}</h5>
+    <p class="card-text">{{ post.text|slice:":15" }}{% if post.text|length > 15 %} {% endif %}</p>
+    <p>{{ post.author }}</p>
+    <a href="{% url 'sn:post_info' post.id %}" class="btn btn-primary">Check more</a>
+  </div>
+  {% endfor %}
 </div>
-
 {% endblock %}

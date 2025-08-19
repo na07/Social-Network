@@ -44,6 +44,7 @@ background-color: #9de2ff;
             <h3 class="card-title fw-bold">{{ post.author }}</h3>
             <h5 class="card-subtitle mb-2 text-muted">{{ post.title }}</h5>
             <p class="card-text">{{ post.text }}</p>
+            <p>{{ post.published|date:"d.m.Y" }}</p>
           </div>
        </div>
      </div>
