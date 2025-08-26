@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from .forms import CreatePost, Filter
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post
+from .models import Subscribe, Friendship, Post, Like
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -37,6 +37,15 @@ def subscribe(request, user_id):
     if not created:
         obj.delete()
     return redirect("sn:profile", user_id)
+
+
+@login_required
+def like(request, post_id):
+    obj, created = Like.objects.get_or_create(post_follower_id=request.user.id, post_id=post_id)
+    if not created:
+        obj.delete()
+    return redirect("sn:profile", request.user.id)
+
 
 @login_required
 def friend_ship(request, user_id):
@@ -84,7 +93,7 @@ def delete_friend(request, friend_id):
 def create_post(request):
     form = CreatePost()
     if request.method == "POST":
-        form = CreatePost(request.POST)
+        form = CreatePost(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user

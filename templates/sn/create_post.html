@@ -6,7 +6,7 @@ background-color: #9de2ff;
 }{% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <div class="row justify-content-center">
         <div class="col-3">
             {{form|crispy}}

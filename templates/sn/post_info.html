@@ -11,9 +11,15 @@ background-color: #9de2ff;
   <div class="col-12 col-md-6 col-lg-4">
     <div class="card shadow-lg border-0 rounded-4">
       <div class="card-body">
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+        {% endif %}
         <h3 class="card-title text-primary fw-bold">{{ post.author }}</h3>
         <h5 class="card-subtitle mb-2 text-secondary">{{ post.title }}</h5>
         <p class="card-text">{{ post.text }}</p>
+        <a href="{% url 'sn:like' post.id %}">
+          <i class="fa-regular fa-thumbs-up"></i>
+        </a>
       </div>
     </div>
   </div>

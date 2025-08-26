@@ -13,6 +13,7 @@ class Subscribe(models.Model):
     class Meta:
         unique_together = ("follower", "user")
 
+
 class Friendship(models.Model):
     friend = models.ForeignKey(User, related_name="my_friends", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="friends", on_delete=models.CASCADE)
@@ -34,6 +35,7 @@ class Post(models.Model):
         ('draft', "Draft"),
         ('published', "Published")
     )
+    image = models.ImageField(upload_to="images/")
     title = models.CharField(max_length=100)
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     text = models.TextField()
@@ -44,11 +46,15 @@ class Post(models.Model):
     category = models.ForeignKey(Category,
                                  on_delete=models.CASCADE,
                                  related_name='posts')
-
     class Meta:
         ordering = ("-created", "-updated")
-
 
     def __str__(self):
         return self.title
 
+class Like(models.Model):
+    post_follower = models.ForeignKey(User, related_name="post_follower", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="post", on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("post_follower", "post")

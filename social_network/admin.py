@@ -1,5 +1,5 @@
 from django.contrib import admin
-from social_network.models import Subscribe, Friendship, Post, Category
+from social_network.models import Subscribe, Friendship, Post, Category, Like
 
 
 # Register your models here.
@@ -21,3 +21,7 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class Category(admin.ModelAdmin):
     list_display = ('name', )
+
+@admin.register(Like)
+class Like(admin.ModelAdmin):
+    pass
