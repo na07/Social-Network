@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load crispy_forms_filters %}
+{% load snfilters %}
 
 {% block style %}body {
 background-color: #9de2ff;
@@ -17,13 +18,60 @@ background-color: #9de2ff;
         <h3 class="card-title text-primary fw-bold">{{ post.author }}</h3>
         <h5 class="card-subtitle mb-2 text-secondary">{{ post.title }}</h5>
         <p class="card-text">{{ post.text }}</p>
-        <a href="{% url 'sn:like' post.id %}">
-          <i class="fa-regular fa-thumbs-up"></i>
-        </a>
+        <form action="{% url 'sn:like' post.id %}" method="post">
+          {% csrf_token %}
+          {% if post|like_check:request.user %}
+          <a href="{% url 'sn:like' post.id %}">
+            <i class="fa-solid fa-thumbs-up"></i>
+          </a>
+          {% else %}
+          <a href="{% url 'sn:like' post.id %}">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </a>
+          {% endif %}
+        </form>
+        <form action="{% url 'sn:like' post.id %}" method="post">
+          {% csrf_token %}
+          {% if post|disslike_check:request.user %}
+          <a href="{% url 'sn:diss_like' post.id %}">
+            <i class="fa-solid fa-thumbs-down"></i>
+          </a>
+          {% else %}
+          <a href="{% url 'sn:diss_like' post.id %}">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </a>
+          {% endif %}
+        </form>
       </div>
     </div>
   </div>
 </div>
 
+<p></p>
 
+<div class="mb">
+  <div class="d-flex justify-content-center">
+    <div class="card" style="width: 39rem;">
+      <div class="card-body">
+        <form action="{% url 'sn:comment' post.id %}" method="post">
+          <textarea class="form-control" name="comment_text"></textarea>
+          {% csrf_token %}
+          <p></p>
+          <button class="btn btn-primary flex-grow-1 me-1" type="submit">submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <p></p>
+  <div class="d-flex justify-content-center">
+    <div class="card" style="width: 39rem;">
+      <div class="card-body">
+        {% for comment in comments %}
+        <h5 class="card-title">{{ comment.comment_maker }}</h5>
+        <p class="card-text">{{ comment.text }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

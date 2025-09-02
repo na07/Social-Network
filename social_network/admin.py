@@ -1,5 +1,5 @@
 from django.contrib import admin
-from social_network.models import Subscribe, Friendship, Post, Category, Like
+from social_network.models import Subscribe, Friendship, Post, Category, Like, Diss_like, Comment
 
 
 # Register your models here.
@@ -24,4 +24,12 @@ class Category(admin.ModelAdmin):
 
 @admin.register(Like)
 class Like(admin.ModelAdmin):
+    pass
+
+@admin.register(Diss_like)
+class Diss_like(admin.ModelAdmin):
+    pass
+
+@admin.register(Comment)
+class Comment(admin.ModelAdmin):
     pass

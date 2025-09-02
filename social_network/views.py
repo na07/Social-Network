@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from .forms import CreatePost, Filter
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post, Like
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -44,7 +44,20 @@ def like(request, post_id):
     obj, created = Like.objects.get_or_create(post_follower_id=request.user.id, post_id=post_id)
     if not created:
         obj.delete()
-    return redirect("sn:profile", request.user.id)
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def diss_like(request, post_id):
+    obj, created = Diss_like.objects.get_or_create(post_follower_id=request.user.id, post_id=post_id)
+    if not created:
+        obj.delete()
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def comment(request, post_id):
+    if request.method == 'POST':
+        obj = Comment.objects.create(comment_maker=request.user, post_id=post_id, text=request.POST['comment_text'])
+    return redirect("sn:post_info", post_id)
 
 
 @login_required
@@ -123,8 +136,9 @@ def posts(request):
     return render(request, "sn/posts_page.html", {"posts": posts, "form": form})
 
 
+@login_required
 def post_info(request: HttpRequest, post_id: int) -> HttpResponse:
     post = get_object_or_404(Post, id=post_id)
-    return render(request, "sn/post_info.html", {"post": post})
+    return render(request, "sn/post_info.html", {"post": post, "comments": post.comments.all()})
 
 

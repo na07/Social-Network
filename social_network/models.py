@@ -53,8 +53,18 @@ class Post(models.Model):
         return self.title
 
 class Like(models.Model):
-    post_follower = models.ForeignKey(User, related_name="post_follower", on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name="post", on_delete=models.CASCADE)
+    post_follower = models.ForeignKey(User, related_name="likes", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="likes", on_delete=models.CASCADE)
+
+class Diss_like(models.Model):
+    post_follower = models.ForeignKey(User, related_name="disslikes", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="disslikes", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ("post_follower", "post")
+
+class Comment(models.Model):
+    comment_maker = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
+    text = models.TextField(max_length=200)
+
