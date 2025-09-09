@@ -42,7 +42,7 @@ background-color: #9de2ff;
                   <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">Add Friend</button>
                   {% endif %}
                 </form>
-                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">change</button>
+                <a href="{% url 'sn:change_profile' profile.owner.id %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">change</a>
                 <form action="{% url 'sn:subscribe' profile.owner.id %}" method="post">
                     {% csrf_token %}
                     {% if profile.owner|follow_check:request.user %}

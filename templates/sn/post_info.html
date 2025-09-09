@@ -50,28 +50,52 @@ background-color: #9de2ff;
 <p></p>
 
 <div class="mb">
-  <div class="d-flex justify-content-center">
-    <div class="card" style="width: 39rem;">
+  <div class="d-flex justify-content-center mb-4">
+    <div class="card shadow-sm" style="width: 39rem; border-radius: 1rem;">
       <div class="card-body">
         <form action="{% url 'sn:comment' post.id %}" method="post">
-          <textarea class="form-control" name="comment_text"></textarea>
           {% csrf_token %}
-          <p></p>
-          <button class="btn btn-primary flex-grow-1 me-1" type="submit">submit</button>
+          <div class="mb-3">
+            <textarea class="form-control" name="comment_text" rows="3" placeholder="Напишите комментарий..." style="border-radius: 0.75rem;"></textarea>
+          </div>
+          <button class="btn btn-primary w-100" type="submit">
+            <i class="fa-regular fa-paper-plane me-2"></i> Отправить
+          </button>
         </form>
       </div>
     </div>
   </div>
-  <p></p>
+
   <div class="d-flex justify-content-center">
-    <div class="card" style="width: 39rem;">
+    <div class="card shadow-sm" style="width: 39rem; border-radius: 1rem;">
       <div class="card-body">
         {% for comment in comments %}
-        <h5 class="card-title">{{ comment.comment_maker }}</h5>
-        <p class="card-text">{{ comment.text }}</p>
+        <div class="card mb-3 shadow-sm" style="border-radius: 0.75rem;">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-1 fw-semibold">{{ comment.comment_maker }}</h5>
+              <small class="text-muted">{{ comment.date|date:"d.m.Y" }}</small>
+            </div>
+            <p class="mb-2">{{ comment.text }}</p>
+            <div>
+              {% if comment|comment_like_check:request.user %}
+                <a href="{% url 'sn:comment_like' comment.id post.id %}" class="text-primary me-2">
+                  <i class="fa-solid fa-thumbs-up"></i>
+                </a>
+              {% else %}
+                <a href="{% url 'sn:comment_like' comment.id post.id %}" class="text-muted me-2">
+                  <i class="fa-regular fa-thumbs-up"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <p class="text-muted text-center">Комментариев пока нет. Будьте первым!</p>
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

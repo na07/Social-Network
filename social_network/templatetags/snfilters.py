@@ -2,7 +2,7 @@ from django import template
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from social_network.models import Friendship, Subscribe, Post, Like, Diss_like
+from social_network.models import Friendship, Subscribe, Post, Like, Diss_like, Comment, Like_comment
 
 User = get_user_model()
 
@@ -19,6 +19,10 @@ def follow_check(owner:User, user:User):
 @register.filter
 def like_check(post:Post, user:User):
     return Like.objects.filter(post=post, post_follower=user).exists()
+
+@register.filter
+def comment_like_check(comment:Comment, user:User):
+    return Like_comment.objects.filter(comment=comment, comment_follower=user).exists()
 
 @register.filter
 def disslike_check(post:Post, user:User):

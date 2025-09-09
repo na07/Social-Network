@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from .forms import CreatePost, Filter
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -22,6 +22,9 @@ def friends_request_view(request):
 def home_view(request):
     return render(request, "sn/home_page.html")
 
+def change_profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    return render(request, "sn/change_profile.html", {"profile": user.profile})
 
 @login_required
 def profile_view(request: HttpRequest, user_id: int) -> HttpResponse:
@@ -57,6 +60,13 @@ def diss_like(request, post_id):
 def comment(request, post_id):
     if request.method == 'POST':
         obj = Comment.objects.create(comment_maker=request.user, post_id=post_id, text=request.POST['comment_text'])
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def comment_like(request, comment_id, post_id):
+    obj, created = Like_comment.objects.get_or_create(comment_follower_id=request.user.id, comment_id=comment_id)
+    if not created:
+        obj.delete()
     return redirect("sn:post_info", post_id)
 
 

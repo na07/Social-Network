@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
+
 # Create your models here.
 
 class Subscribe(models.Model):
@@ -63,8 +64,14 @@ class Diss_like(models.Model):
     class Meta:
         unique_together = ("post_follower", "post")
 
+
 class Comment(models.Model):
     comment_maker = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
     text = models.TextField(max_length=200)
+    date = models.DateTimeField(default=timezone.now)
+
+class Like_comment(models.Model):
+    comment_follower = models.ForeignKey(User, related_name="comment_likes", on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, related_name="comment_likes", on_delete=models.CASCADE)
 
