@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
-from .forms import CreatePost, Filter
+from .forms import CreatePost, Filter, ProfileForm
 from .admin import PostAdmin
 from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment
 from django.contrib.auth.models import User
@@ -23,8 +23,28 @@ def home_view(request):
     return render(request, "sn/home_page.html")
 
 def change_profile(request, user_id):
+    if request.user.id != user_id:
+        return redirect('sn:home')
     user = get_object_or_404(User, id=user_id)
-    return render(request, "sn/change_profile.html", {"profile": user.profile})
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=user.profile)
+        if form.is_valid():
+            user_name = request.POST.get("username")
+            user.username = user_name
+            form.save()
+            user.save()
+            return redirect('sn:home')
+    else:
+        form = ProfileForm()
+
+
+        #user_name = request.POST.get("username")
+        #user.username = user_name
+        #user_avatar = request.FILES.get("image")
+        #user.profile.avatar = user_avatar
+        #user.save()
+
+    return render(request, "sn/change_profile.html", {"profile": user.profile,'form': form})
 
 @login_required
 def profile_view(request: HttpRequest, user_id: int) -> HttpResponse:

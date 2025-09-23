@@ -19,7 +19,7 @@ background-color: #9de2ff;
             <div class="flex-shrink-0">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-profiles/avatar-1.webp"
                 alt="Generic placeholder image" class="img-fluid" style="width: 180px; border-radius: 10px;">
-                <input class="form-control mt-1" type="file" value="profile.avatar.url" name="image">
+                <input class="form-control mt-1" type="file" value="{% if profile.avatar %} profile.avatar.url {% endif %}" name="avatar">
                 <button class="btn btn-success">change</button>
             </div>
             <div class="flex-grow-1 ms-3">
