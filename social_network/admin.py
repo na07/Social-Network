@@ -1,5 +1,5 @@
 from django.contrib import admin
-from social_network.models import Subscribe, Friendship, Post, Category, Like, Diss_like, Comment
+from social_network.models import Subscribe, Friendship, Post, Category, Like, Diss_like, Comment, Community
 
 
 # Register your models here.
@@ -16,6 +16,12 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'created', 'published', 'updated', 'status', 'category')
     search_fields = ('title', 'author__username', 'published')
     list_filter = ('status', 'category')
+
+@admin.register(Community)
+class CommunityAdmin(admin.ModelAdmin):
+    list_display = ('title', 'image', 'author', 'bio', 'created', 'private', 'permission')
+    search_fields = ('title', 'author')
+    list_filter = ('permission', 'private')
 
 
 @admin.register(Category)

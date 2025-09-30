@@ -3,9 +3,9 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
-from .forms import CreatePost, Filter, ProfileForm
+from .forms import CreatePost, Filter, ProfileForm, CreateCommunity
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -146,6 +146,9 @@ def create_post(request):
 
     return render(request, "sn/create_post.html", {"form": form})
 
+
+
+
 def posts(request):
     posts = Post.objects.filter(status='published')
     form = Filter(request.GET)
@@ -166,9 +169,31 @@ def posts(request):
     return render(request, "sn/posts_page.html", {"posts": posts, "form": form})
 
 
+
+
 @login_required
 def post_info(request: HttpRequest, post_id: int) -> HttpResponse:
     post = get_object_or_404(Post, id=post_id)
     return render(request, "sn/post_info.html", {"post": post, "comments": post.comments.all()})
 
 
+
+@login_required
+def community_create_view(request):
+    form = CreateCommunity()
+    if request.method == "POST":
+        form = CreateCommunity(request.POST, request.FILES)
+        if form.is_valid():
+            community = form.save(commit=False)
+            community.author = request.user
+            community.save()
+            messages.success(request, "Сообщество успешно создан")
+            return redirect("sn:home")
+
+    return render(request, "sn/community_create.html", {"form": form})
+
+
+
+def communities(request):
+    communities_list = Community.objects.filter(private = False)
+    return render(request, "sn/communities.html", {"communities": communities_list})

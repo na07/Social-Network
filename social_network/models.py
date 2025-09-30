@@ -53,6 +53,15 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+class Community(models.Model):
+    image = models.ImageField(upload_to="community_avatar/")
+    title = models.CharField(max_length=100)
+    author = models.ForeignKey(User, related_name="community", on_delete=models.PROTECT)
+    bio = models.CharField(max_length=200)
+    created = models.DateTimeField(auto_now_add=True)
+    permission = models.BooleanField(default=False)
+    private = models.BooleanField(default=False)
+
 class Like(models.Model):
     post_follower = models.ForeignKey(User, related_name="likes", on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name="likes", on_delete=models.CASCADE)

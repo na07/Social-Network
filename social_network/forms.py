@@ -1,5 +1,6 @@
 from django import forms
-from .models import Post
+from .models import Post, Community
+
 
 class CreatePost(forms.ModelForm):
     class Meta:
@@ -22,3 +23,11 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['avatar']
+
+
+
+
+class CreateCommunity(forms.ModelForm):
+    class Meta:
+        model = Community
+        fields = ['image', 'title', 'bio', "permission", 'private']
