@@ -25,4 +25,6 @@ urlpatterns = [
     path("change_profile/<int:user_id>/", views.change_profile, name = "change_profile"),
     path("community_create_page/", views.community_create_view, name="community_create"),
     path("communities/", views.communities, name="communities"),
+    path("community_info/<int:community_id>/", views.community_info, name="community_info"),
+    path("diskussion/<int:community_id>/", views.diskussion, name="diskussion"),
 ]

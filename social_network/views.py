@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
 from .forms import CreatePost, Filter, ProfileForm, CreateCommunity
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community, Diskussion
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -193,7 +193,18 @@ def community_create_view(request):
     return render(request, "sn/community_create.html", {"form": form})
 
 
-
+@login_required
 def communities(request):
     communities_list = Community.objects.filter(private = False)
     return render(request, "sn/communities.html", {"communities": communities_list})
+
+@login_required
+def community_info(request: HttpRequest, community_id: int) -> HttpResponse:
+    community = get_object_or_404(Community, id=community_id)
+    return render(request, "sn/community_info.html", {"community": community})
+
+@login_required
+def diskussion(request, community_id):
+    if request.method == 'POST':
+        obj = Diskussion.objects.create(diskussion_maker=request.user, community_id=community_id, text=request.POST['diskussion_text'])
+    return redirect("sn:community_info", community_id)
