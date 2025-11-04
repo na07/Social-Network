@@ -89,6 +89,15 @@ class Diskussion(models.Model):
     community = models.ForeignKey(Community, related_name="diskussion", on_delete=models.CASCADE)
     text = models.TextField(max_length=200)
     date = models.DateTimeField(default=timezone.now)
+    parent = models.ForeignKey('self', related_name="reply", on_delete=models.CASCADE, null=True)
+
+class Notification(models.Model):
+    title = models.CharField(max_length=30)
+    bio = models.CharField(max_length=100, null=True, blank=True)
+    url = models.CharField(max_length=100, null=True, blank=True)
+    recipient = models.ForeignKey(User, related_name='notifications', on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    actor = models.ForeignKey(User, related_name='actor', on_delete=models.CASCADE)
 
 
 

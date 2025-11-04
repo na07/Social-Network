@@ -1,5 +1,6 @@
 from django.contrib import admin
-from social_network.models import Subscribe, Friendship, Post, Category, Like, Diss_like, Comment, Community
+from social_network.models import Subscribe, Friendship, Post, Category, Like, Diss_like, Comment, Community, \
+    Diskussion, Notification
 
 
 # Register your models here.
@@ -22,6 +23,14 @@ class CommunityAdmin(admin.ModelAdmin):
     list_display = ('title', 'image', 'author', 'bio', 'created', 'private', 'permission')
     search_fields = ('title', 'author')
     list_filter = ('permission', 'private')
+
+@admin.register(Diskussion)
+class DiskussionAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Category)

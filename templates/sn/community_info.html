@@ -48,16 +48,45 @@ background-color: #9de2ff;
   <div class="d-flex justify-content-center">
     <div class="card shadow-sm" style="width: 39rem; border-radius: 1rem;">
       <div class="card-body">
-        {% for diskussion in diskussion %}
+        {% for diskussion in community.diskussion.all %}
+        {% if diskussion.parent == None %}
         <div class="card mb-3 shadow-sm" style="border-radius: 0.75rem;">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
               <h5 class="mb-1 fw-semibold">{{ diskussion.diskussion_maker }}</h5>
               <small class="text-muted">{{ diskussion.date|date:"d.m.Y" }}</small>
+              <p>{{ diskussion.parent }}</p>
             </div>
             <p class="mb-2">{{ diskussion.text }}</p>
           </div>
         </div>
+        {% for reply in diskussion.reply.all %}
+        <div>
+          <p>{{ reply.diskussion_maker }}</p>
+          <p>{{ reply.text }}</p>
+        </div>
+        {% endfor %}
+        <div>
+          <div class="mb">
+            <div class="d-flex justify-content-center mb-4">
+              <div class="card shadow-sm" style="width: 39rem; border-radius: 1rem;">
+                <div class="card-body">
+                  <form action="{% url 'sn:diskussion' community.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                      <input type="hidden" name="parent_id" value="{{ diskussion.id }}">
+                      <textarea class="form-control" name="diskussion_text" rows="3" placeholder="Напишите комментарий..." style="border-radius: 0.75rem;"></textarea>
+                    </div>
+                    <button class="btn btn-primary w-100" type="submit">
+                      <i class="fa-regular fa-paper-plane me-2"></i> Отправить
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
         {% empty %}
         <p class="text-muted text-center">Комментариев пока нет. Будьте первым!</p>
         {% endfor %}

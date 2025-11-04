@@ -206,5 +206,12 @@ def community_info(request: HttpRequest, community_id: int) -> HttpResponse:
 @login_required
 def diskussion(request, community_id):
     if request.method == 'POST':
-        obj = Diskussion.objects.create(diskussion_maker=request.user, community_id=community_id, text=request.POST['diskussion_text'])
+        obj = Diskussion.objects.create(diskussion_maker=request.user,
+                                        community_id=community_id,
+                                        parent_id = request.POST['parent_id'],
+                                        text=request.POST['diskussion_text'])
     return redirect("sn:community_info", community_id)
+
+
+def notification_view(request):
+    return render(request, "sn/notification.html")

@@ -23,7 +23,7 @@ background-color: #9de2ff;
           <h4 class="card-title fw-semibold mb-2">{{ community.title }}</h4>
           <div class="mt-auto d-flex justify-content-between align-items-center">
             <small class="text-secondary">{{ community.created|date:"d.m.Y" }}</small>
-            <a href="#" class="btn btn-sm btn-outline-primary">
+            <a href="{% url 'sn:community_info' community.id %}" class="btn btn-sm btn-outline-primary">
               Подробнее
             </a>
           </div>
