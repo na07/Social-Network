@@ -27,5 +27,5 @@ urlpatterns = [
     path("communities/", views.communities, name="communities"),
     path("community_info/<int:community_id>/", views.community_info, name="community_info"),
     path("diskussion/<int:community_id>/", views.diskussion, name="diskussion"),
-    path("notification/", views.notification_view, name="notification"),
+    path("notification/", views.Notification_views.as_view(), name="notification"),
 ]

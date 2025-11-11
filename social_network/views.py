@@ -3,9 +3,12 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import ListView
+
 from .forms import CreatePost, Filter, ProfileForm, CreateCommunity
 from .admin import PostAdmin
-from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community, Diskussion
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community, Diskussion, \
+    Notification
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
@@ -84,7 +87,9 @@ def comment(request, post_id):
 
 @login_required
 def comment_like(request, comment_id, post_id):
+    comment = get_object_or_404(Comment, id=comment_id)
     obj, created = Like_comment.objects.get_or_create(comment_follower_id=request.user.id, comment_id=comment_id)
+    obj2 = Notification.objects.create(title="вас лайкнули", bio=f"вашему аккаунту {comment.comment_maker} поставил лайк {request.user}", recipient=comment.comment_maker, actor=request.user)
     if not created:
         obj.delete()
     return redirect("sn:post_info", post_id)
@@ -94,6 +99,7 @@ def comment_like(request, comment_id, post_id):
 def friend_ship(request, user_id):
     user_to_friend_add = get_object_or_404(User, id=user_id)
     obj, created = Friendship.objects.get_or_create(user=request.user, friend=user_to_friend_add)
+    obj2 = Notification.objects.create(title="заявка в друзья", bio=f"вашему аккаунту {user_to_friend_add} кинул запрос дружбы аккаунт {request.user}", recipient=user_to_friend_add, actor=request.user)
     if not created:
         obj.delete()
     return  redirect("sn:profile", user_id)
@@ -212,6 +218,10 @@ def diskussion(request, community_id):
                                         text=request.POST['diskussion_text'])
     return redirect("sn:community_info", community_id)
 
+class Notification_views(ListView):
+    model = Notification
+    context_object_name = "notifications"
+    template_name = ("sn/notification.html")
 
-def notification_view(request):
-    return render(request, "sn/notification.html")
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user)

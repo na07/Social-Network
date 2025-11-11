@@ -30,7 +30,8 @@ class DiskussionAdmin(admin.ModelAdmin):
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title', 'bio', 'recipient', 'actor', 'date', 'url')
+    readonly_fields = ('date', )
 
 
 @admin.register(Category)

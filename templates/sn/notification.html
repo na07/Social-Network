@@ -8,12 +8,11 @@ background-color: #9de2ff;
 
 {% block content %}
 
+{% for notification in notifications %}
 
+<p>{{ notification.title }}</p>
 
-
-
-
-
+{% endfor %}
 
 
 
