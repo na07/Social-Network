@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import profile_view
+from .views import profile_view, PostListCreateAPIView
 from authenticator.views import login_view, register_view, logout_view
 
 
@@ -16,7 +16,7 @@ urlpatterns = [
     path('decline_friend_request/<int:friendship_id>/', views.decline_friend_request, name='decline_friend_request'),
     path('delete_friend/<int:friend_id>/', views.delete_friend, name='delete_friend'),
     path("create_post/", views.create_post, name = "create_post"),
-    path("posts/", views.posts, name = "posts"),
+    path("posts/", views.PostView.as_view(), name = "posts"),
     path('post_info/<int:post_id>/', views.post_info, name='post_info'),
     path('like/<int:post_id>/', views.like, name="like"),
     path('diss_like/<int:post_id>/', views.diss_like, name="diss_like"),
@@ -28,4 +28,5 @@ urlpatterns = [
     path("community_info/<int:community_id>/", views.community_info, name="community_info"),
     path("diskussion/<int:community_id>/", views.diskussion, name="diskussion"),
     path("notification/", views.Notification_views.as_view(), name="notification"),
+    path('api/books/', PostListCreateAPIView.as_view(), name='book-list-create'),
 ]

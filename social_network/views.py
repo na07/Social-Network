@@ -12,6 +12,10 @@ from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_
 from django.contrib.auth.models import User
 from authenticator.models import Profile
 from django.contrib import messages
+from rest_framework import generics
+
+from .pagination import CustomPagination
+from .serializers import PostSerializer, AuthorSerializer, PostCreateUpdateSerializer
 
 
 # Create your views here.
@@ -153,29 +157,44 @@ def create_post(request):
     return render(request, "sn/create_post.html", {"form": form})
 
 
+class PostView(ListView):
+    model = Post
+    context_object_name = "posts"
+    template_name = ("sn/posts_page.html")
+    paginate_by = 2
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context["form"] = Filter(self.request.GET)
+        return context
 
-def posts(request):
-    posts = Post.objects.filter(status='published')
-    form = Filter(request.GET)
-    author = request.GET.get("author")
-    created = request.GET.get("created")
-    print(created)
-    date1 = request.GET.get("date1")
-    date2 = request.GET.get("date2")
-    if author:
-        posts = posts.filter(author__username=author)
-    if created:
-        posts = posts.filter(created__date=created)
-    if date1:
-        posts = posts.filter(created__date__lt=date2)
-    if date2:
-        posts = posts.filter(created__date__gt=date1)
+    def get_queryset(self):
+       posts = Post.objects.filter(status='published')
+       author = self.request.GET.get("author")
+       created = self.request.GET.get("created")
+       print(created)
+       date1 = self.request.GET.get("date1")
+       date2 = self.request.GET.get("date2")
+       if author:
+           posts = posts.filter(author__username=author)
+       if created:
+           posts = posts.filter(created__date=created)
+       if date1:
+           posts = posts.filter(created__date__lt=date2)
+       if date2:
+           posts = posts.filter(created__date__gt=date1)
+       return posts
 
-    return render(request, "sn/posts_page.html", {"posts": posts, "form": form})
+class PostListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    pagination_class = CustomPagination
 
-
-
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return PostCreateUpdateSerializer
+        return PostSerializer
 
 @login_required
 def post_info(request: HttpRequest, post_id: int) -> HttpResponse:
