@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .form-container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 300px;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+      }
+      button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #2c7be5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .messages {
+        color: red;
+        margin-top: 10px;
+      }
+
+
+    </style>
+</head>
+<body>
+ {% block content %}
+  <div class="form-container">
+    <h2>Вход</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Войти</button>
+    </form>
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+</body>
+</html>
+
+
+
+
+

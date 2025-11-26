@@ -1,0 +1,128 @@
+{% extends 'base/base.html' %}
+{% load snfilters %}
+
+{% block style %}body {
+background-color: #9de2ff;
+}{% endblock %}
+
+{% block content %}
+<div class="px-4 py-5">
+  <div class="row d-flex justify-content-center">
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      <div class="card" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              {% if profile.avatar %}
+              <img class="img-fluid" style="width: 180px; border-radius: 10px;" src="{{ profile.avatar.url }}" alt="avatar">
+              {% endif %}
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h5 class="mb-1">{{ profile.owner }}</h5>
+              <p class="mb-2 pb-1">Senior Journalist</p>
+              <div class="d-flex justify-content-start rounded-3 p-2 mb-2 bg-body-tertiary">
+                <div>
+                  <p class="small text-muted mb-1">Articles</p>
+                  <p class="mb-0">41</p>
+                </div>
+                <div class="px-3">
+                  <p class="small text-muted mb-1">Followers</p>
+                  <p class="mb-0">976</p>
+                </div>
+                <div>
+                  <p class="small text-muted mb-1">Rating</p>
+                  <p class="mb-0">8.5</p>
+                </div>
+              </div>
+              <div class="d-flex pt-1">
+                <form action="{% url 'sn:friendship' profile.owner.id %}" method="post">
+                  {% csrf_token %}
+                  {% if profile.owner|friends_check:request.user %}
+                  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary flex-grow-1 me-1">Remove friend</button>
+                  {% else %}
+                  <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">Add Friend</button>
+                  {% endif %}
+                </form>
+                <a href="{% url 'sn:change_profile' profile.owner.id %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">change</a>
+                <form action="{% url 'sn:subscribe' profile.owner.id %}" method="post">
+                    {% csrf_token %}
+                    {% if profile.owner|follow_check:request.user %}
+                    <button type="submit" class="btn btn-outline-primary flex-grow-1">Remove follow</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary flex-grow-1">Follow</button>
+                    {% endif %}
+                <a href="{% url 'sn:friends_requests' %}" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-grow-1 me-1">list</a>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if request.user == profile.owner %}
+<div class="px-4 py-500">
+  <div class="row d-flex justify-content-center">
+    <div class="col col-md-9 col-lg-7 col-xl-6">
+      <div class="card" style="border-radius: 5px;">
+        <div class="card-body p-4">
+          <div class="d-flex">
+            <div class="flex-shrink-0">
+              <h2>Друзья</h2>
+              <ul>
+                {% for friendship in friends %}
+                  {% if friendship.confirmed %}
+                    <li>
+                      {{ friendship.friend.username }}
+                      <a href="{% url 'sn:delete_friend' friendship.id %}">Удалить из друзей</a>
+                    </li>
+                  {% endif %}
+                {% empty %}
+                  <li>У вас пока нет друзей.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+<div class="container my-5">
+  <div class="row g-4">
+    {% for post in posts %}
+    <div class="col-md-4 d-flex">
+      <div class="card shadow-sm border-0 rounded-3 w-100">
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+        {% endif %}
+
+        <div class="card-body d-flex flex-column">
+          {% if post.status == "published" %}
+          <span class="badge bg-success mb-2">Опубликовано</span>
+          {% elif post.status == "draft" %}
+          <span class="badge bg-warning text-dark mb-2">Черновик</span>
+          {% else %}
+          <span class="badge bg-secondary mb-2">Неизвестно</span>
+          {% endif %}
+
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text text-muted">
+            {{ post.text|slice:":100" }}{% if post.text|length > 100 %}...{% endif %}
+          </p>
+
+          <small class="text-secondary mb-3">{{ post.author }}</small>
+
+          <a href="{% url 'sn:post_info' post.id %}" class="btn btn-primary mt-auto">Подробнее</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

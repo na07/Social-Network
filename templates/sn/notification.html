@@ -1,0 +1,30 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_filters %}
+
+{% block style %}body {
+background-color: #9de2ff;
+}{% endblock %}
+
+
+{% block content %}
+
+{% for notification in notifications %}
+
+<p>{{ notification.title }}</p>
+
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

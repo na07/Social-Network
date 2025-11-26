@@ -1,0 +1,246 @@
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import ListView
+
+from .forms import CreatePost, Filter, ProfileForm, CreateCommunity
+from .admin import PostAdmin
+from .models import Subscribe, Friendship, Post, Like, Diss_like, Comment, Like_comment, Community, Diskussion, \
+    Notification
+from django.contrib.auth.models import User
+from authenticator.models import Profile
+from django.contrib import messages
+from rest_framework import generics
+
+from .pagination import CustomPagination
+from .serializers import PostSerializer, AuthorSerializer, PostCreateUpdateSerializer
+
+
+# Create your views here.
+
+@login_required
+def friends_request_view(request):
+    requests = Friendship.objects.filter(friend=request.user, confirmed=False)
+    return render(request, "sn/friends_request_page.html", {"requests": requests})
+
+
+def home_view(request):
+    return render(request, "sn/home_page.html")
+
+def change_profile(request, user_id):
+    if request.user.id != user_id:
+        return redirect('sn:home')
+    user = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=user.profile)
+        if form.is_valid():
+            user_name = request.POST.get("username")
+            user.username = user_name
+            form.save()
+            user.save()
+            return redirect('sn:home')
+    else:
+        form = ProfileForm()
+
+
+        #user_name = request.POST.get("username")
+        #user.username = user_name
+        #user_avatar = request.FILES.get("image")
+        #user.profile.avatar = user_avatar
+        #user.save()
+
+    return render(request, "sn/change_profile.html", {"profile": user.profile,'form': form})
+
+@login_required
+def profile_view(request: HttpRequest, user_id: int) -> HttpResponse:
+    user = get_object_or_404(User, id=user_id)
+    friends = Friendship.objects.filter(Q(user=user) | Q(friend=user), confirmed=True)
+    posts = Post.objects.filter(author=user, status='published')
+    return render(request, "sn/profile_page.html", {"profile": user.profile, "friends": friends, "posts": posts})
+
+@login_required
+def subscribe(request, user_id):
+    user_to_follow = get_object_or_404(User, id=user_id)
+    obj, created = Subscribe.objects.get_or_create(follower=request.user, user=user_to_follow)
+    if not created:
+        obj.delete()
+    return redirect("sn:profile", user_id)
+
+
+@login_required
+def like(request, post_id):
+    obj, created = Like.objects.get_or_create(post_follower_id=request.user.id, post_id=post_id)
+    if not created:
+        obj.delete()
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def diss_like(request, post_id):
+    obj, created = Diss_like.objects.get_or_create(post_follower_id=request.user.id, post_id=post_id)
+    if not created:
+        obj.delete()
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def comment(request, post_id):
+    if request.method == 'POST':
+        obj = Comment.objects.create(comment_maker=request.user, post_id=post_id, text=request.POST['comment_text'])
+    return redirect("sn:post_info", post_id)
+
+@login_required
+def comment_like(request, comment_id, post_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    obj, created = Like_comment.objects.get_or_create(comment_follower_id=request.user.id, comment_id=comment_id)
+    obj2 = Notification.objects.create(title="вас лайкнули", bio=f"вашему аккаунту {comment.comment_maker} поставил лайк {request.user}", recipient=comment.comment_maker, actor=request.user)
+    if not created:
+        obj.delete()
+    return redirect("sn:post_info", post_id)
+
+
+@login_required
+def friend_ship(request, user_id):
+    user_to_friend_add = get_object_or_404(User, id=user_id)
+    obj, created = Friendship.objects.get_or_create(user=request.user, friend=user_to_friend_add)
+    obj2 = Notification.objects.create(title="заявка в друзья", bio=f"вашему аккаунту {user_to_friend_add} кинул запрос дружбы аккаунт {request.user}", recipient=user_to_friend_add, actor=request.user)
+    if not created:
+        obj.delete()
+    return  redirect("sn:profile", user_id)
+
+
+@login_required
+def accept_friend_request(request, friendship_id):
+    friendship = get_object_or_404(Friendship, id=friendship_id)
+
+    if friendship.friend != request.user:
+        return redirect('sn:friends_requests')
+
+    friendship.confirmed = True
+    friendship.save()
+
+
+    return redirect('sn:friends_requests')
+
+
+@login_required
+def decline_friend_request(request, friendship_id):
+    friendship = get_object_or_404(Friendship, id=friendship_id)
+
+    if friendship.friend != request.user:
+        return redirect('sn:friends_requests')
+
+    friendship.delete()
+    return redirect('sn:friends_requests')
+
+@login_required
+def delete_friend(request, friend_id):
+    friendship = get_object_or_404(Friendship, id=friend_id)
+
+    friendship.delete()
+
+    return redirect('sn:profile', user_id=request.user.id)
+
+
+@login_required
+def create_post(request):
+    form = CreatePost()
+    if request.method == "POST":
+        form = CreatePost(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            messages.success(request, "Пост успешно создан")
+            return redirect("sn:home")
+
+    return render(request, "sn/create_post.html", {"form": form})
+
+
+class PostView(ListView):
+    model = Post
+    context_object_name = "posts"
+    template_name = ("sn/posts_page.html")
+    paginate_by = 2
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        context["form"] = Filter(self.request.GET)
+        return context
+
+    def get_queryset(self):
+       posts = Post.objects.filter(status='published')
+       author = self.request.GET.get("author")
+       created = self.request.GET.get("created")
+       print(created)
+       date1 = self.request.GET.get("date1")
+       date2 = self.request.GET.get("date2")
+       if author:
+           posts = posts.filter(author__username=author)
+       if created:
+           posts = posts.filter(created__date=created)
+       if date1:
+           posts = posts.filter(created__date__lt=date2)
+       if date2:
+           posts = posts.filter(created__date__gt=date1)
+       return posts
+
+class PostListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    pagination_class = CustomPagination
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return PostCreateUpdateSerializer
+        return PostSerializer
+
+@login_required
+def post_info(request: HttpRequest, post_id: int) -> HttpResponse:
+    post = get_object_or_404(Post, id=post_id)
+    return render(request, "sn/post_info.html", {"post": post, "comments": post.comments.all()})
+
+
+
+@login_required
+def community_create_view(request):
+    form = CreateCommunity()
+    if request.method == "POST":
+        form = CreateCommunity(request.POST, request.FILES)
+        if form.is_valid():
+            community = form.save(commit=False)
+            community.author = request.user
+            community.save()
+            messages.success(request, "Сообщество успешно создан")
+            return redirect("sn:home")
+
+    return render(request, "sn/community_create.html", {"form": form})
+
+
+@login_required
+def communities(request):
+    communities_list = Community.objects.filter(private = False)
+    return render(request, "sn/communities.html", {"communities": communities_list})
+
+@login_required
+def community_info(request: HttpRequest, community_id: int) -> HttpResponse:
+    community = get_object_or_404(Community, id=community_id)
+    return render(request, "sn/community_info.html", {"community": community})
+
+@login_required
+def diskussion(request, community_id):
+    if request.method == 'POST':
+        obj = Diskussion.objects.create(diskussion_maker=request.user,
+                                        community_id=community_id,
+                                        parent_id = request.POST.get('parent_id'),
+                                        text=request.POST['diskussion_text'])
+    return redirect("sn:community_info", community_id)
+
+class Notification_views(ListView):
+    model = Notification
+    context_object_name = "notifications"
+    template_name = ("sn/notification.html")
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user)
