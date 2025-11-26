@@ -233,7 +233,7 @@ def diskussion(request, community_id):
     if request.method == 'POST':
         obj = Diskussion.objects.create(diskussion_maker=request.user,
                                         community_id=community_id,
-                                        parent_id = request.POST['parent_id'],
+                                        parent_id = request.POST.get('parent_id'),
                                         text=request.POST['diskussion_text'])
     return redirect("sn:community_info", community_id)
 
